@@ -1,0 +1,16 @@
+# Shared environment for every tool in this repository.
+#
+# This file is OPTIONAL. Each tool already declares its own dependencies in a
+# PEP 723 block at the top of its file, which is what `uv run <tool>.py` uses.
+# Use this only when you would rather keep one environment for all the tools:
+#
+#     python3 -m venv .venv && source .venv/bin/activate
+#     pip install -r requirements.txt
+#
+# It is the union of every tool's requirements and is maintained by hand, so
+# add a line here when a tool gains a dependency.
+
+# redact_cc.py
+# Held below 2.0: 2.x pulls numpy, networkx and onnxruntime (~105 MB) for
+# features this tool never uses. Tested on both.
+pymupdf>=1.24,<2

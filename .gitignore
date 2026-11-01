@@ -218,3 +218,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- hacks4pdf ---
+
+# Tool output: redacted copies are written next to their input by default.
+redacted/
+
+# PDFs are personal documents - never commit one by accident.
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
