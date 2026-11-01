@@ -10,7 +10,7 @@
 # It is the union of every tool's requirements and is maintained by hand, so
 # add a line here when a tool gains a dependency.
 
-# redact_cc.py
+# redact_cc.py, stamp_signature.py
 # Held below 2.0: 2.x pulls numpy, networkx and onnxruntime (~105 MB) for
-# features this tool never uses. Tested on both.
+# features these tools never use. Tested on both.
 pymupdf>=1.24,<2

@@ -30,6 +30,7 @@ The first run of a tool downloads its packages; later runs start immediately.
 | Tool | What it does |
 | --- | --- |
 | [`redact_cc.py`](redact_cc.py) | Permanently erases credit-card numbers, transaction rows and whole pages from PDF statements. |
+| [`stamp_signature.py`](stamp_signature.py) | Stamps a signature image onto PDF pages, placed by the surrounding text rather than fixed coordinates. |
 
 Every tool documents itself:
 
@@ -103,24 +104,36 @@ The tools here were written with AI assistance, in conversation with Claude
 - **What the model did.** For `redact_cc.py`: the implementation, the synthetic
   test statements, and this README. It also chose most of the design details —
   how rows are grouped, how continuation lines inherit their parent's fate, the
-  dependency pin.
+  dependency pin. For `stamp_signature.py`: the author wrote the first working
+  version, with AI assistance, in an earlier conversation; the model then
+  reworked it to this repository's conventions, added batch processing and the
+  rotated-text handling, and fixed the defects named below.
 - **What the author did.** Set the requirements, directed every change, decided
   what the tools should and should not do, and accepted or rejected the result
   at each step.
-- **How it was checked.** Against synthetic PDF statements generated for the
-  purpose, never against a real statement committed to this repository. Two
-  defects surfaced that way and were fixed before the first commit: a Luhn
-  checksum false positive that erased rows it was meant to keep, and a currency
-  continuation line that outlived the transaction it belonged to on tightly
-  spaced tables.
+- **How it was checked.** Against synthetic PDFs generated for the purpose,
+  never against a real statement or signed document committed to this
+  repository. Defects surfaced that way and were fixed before the relevant
+  commit. In `redact_cc.py`: a Luhn checksum false positive that erased rows it
+  was meant to keep, and a currency continuation line that outlived the
+  transaction it belonged to on tightly spaced tables. In
+  `stamp_signature.py`: an output file written even when nothing matched, so a
+  listing showed a `-signed.pdf` that carried no signature; and sideways text
+  placing the signature perpendicular to the name. The second of those is worth
+  a note — the first attempted fix keyed on the page's `/Rotate` value, which
+  testing showed to be the wrong signal, since the failing page reported no
+  rotation at all and the sideways-ness lived in the text.
 - **Where it is recorded.** Commits carry a `Co-Authored-By` trailer naming the
   model, so `git log` shows which changes it had a hand in.
 
 AI involvement is not a warranty in either direction, and neither is the
-testing above. Redaction is a security-relevant operation: before sending a
-redacted file to anyone, check it yourself. `redact_cc.py` re-reads every file
-it writes and reports anything it can still extract — that line is worth
-reading rather than skipping.
+testing above. Both tools do something consequential to a document, so check
+what they produce before it leaves your hands. `redact_cc.py` re-reads every
+file it writes and reports anything it can still extract — that line is worth
+reading rather than skipping. `stamp_signature.py` has `--dry-run`, which
+reports every placement it would make without writing anything; a signature in
+the wrong place is as much of a problem as a redaction that did not take, and
+the dry run is how you find out first.
 
 ## Licence
 
@@ -129,7 +142,7 @@ These tools are released under the GNU General Public License v3 or later; see
 `SPDX-License-Identifier` line.
 
 The libraries a tool depends on keep their own licences, which are not always
-the same. `redact_cc.py` uses PyMuPDF, which is dual-licensed under the **AGPL
+the same. Both tools here use PyMuPDF, which is dual-licensed under the **AGPL
 v3** or an Artifex commercial licence. The AGPL is compatible with the GPL, so
 the combination is fine to distribute, but the AGPL's network clause travels
 with PyMuPDF: anyone who puts this tool behind a web service owes its users the
